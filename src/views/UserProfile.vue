@@ -1,8 +1,8 @@
 <template>
   <div class="user-profile">
     <div class="user-profile__user-panel">
-      <h1 class="user-profile__username">@{{user.userName}}</h1>
-      <div class="user-profile__admin-badge" v-if="user.isAdmin">
+      <h1 class="user-profile__username">@{{state.user.userName}}</h1>
+      <div class="user-profile__admin-badge" v-if="state.user.isAdmin">
         Admin
       </div>
       <div class="user-profile__follower-count">
@@ -12,7 +12,7 @@
     </div>
 
     <div class="user-profile__twoots-wrapper">
-      <twoot-item v-for="twoot in user.twoots" :key="twoot.id" :twoot="twoot" :username="user.userName" @favourite="toggelFavourite"/>
+      <twoot-item v-for="twoot in state.user.twoots" :key="twoot.id" :twoot="twoot" :username="state.user.userName" @favourite="toggelFavourite"/>
 <!--      <div class="user-profile__twoot" v-for="twoot in user.twoots" :key="twoot.id">
         <img src="../assets/logo.png" alt="Avatar" style="width:100px">
         <div class="user-profile__twoot-content">
@@ -24,16 +24,49 @@
 </template>
 
 <script>
-import TwootItem from "./TwootItem";
-import CreateTwootPanel from "./CreateTwootPanel";
+import {reactive,computed} from "vue";
+import TwootItem from "../components/TwootItem";
+import CreateTwootPanel from "../components/CreateTwootPanel";
+import {useRoute} from "vue-router";
+import {users} from "../assets/users";
 
 export default {
   name: 'UserProfile',
+    setup() {
+      const route = new useRoute()
+
+      const fullName = computed(()=> `${state.user.firstName} ${state.user.lastName}`)
+      const userId = computed(()=> route.params.userId)
+      const state = reactive({
+        followers:0,
+        user:users[userId.value - 1] || users[0]
+      })
+      function toggelFavourite(twoot){
+        twoot.isfavourite = !twoot.isfavourite;
+        console.log(`Favourited tweet #${twoot.id}`)
+        console.log(`is Favourited #${twoot.isfavourite}`)
+      }
+
+      function addNewTwoot(newTwootContent){
+        state.user.twoots.unshift({
+          id:state.user.twoots.length+1,
+          content: newTwootContent
+        });
+      }
+      //if(userId) fetchUserFromApi(userId)
+      return {
+        state,
+        userId,
+        fullName,
+        toggelFavourite,
+        addNewTwoot
+      }
+  },
   components:{
     TwootItem,
     CreateTwootPanel
   },
-  data() {
+  /*data() {
     return{
       followers:0,
       user: {
@@ -49,37 +82,13 @@ export default {
         ]
       }
     }
-  },
+  },*/
   watch: {
     followers(newFollwerCount, oldFollwerCount){
       if (oldFollwerCount < newFollwerCount){
-        console.log(`${this.user.userName} has gained a follwer!`)
+        console.log(`${this.state.user.userName} has gained a follwer!`)
       }
     }
-  },
-  computed: {
-    fullName() {
-      return `${this.user.firstName} ${this.user.lastName}`;
-    }
-  },
-  methods: {
-    followUser(){
-      this.followers++;
-    },
-    toggelFavourite(twoot){
-      twoot.isfavourite = !twoot.isfavourite;
-      console.log(`Favourited tweet #${twoot.id}`)
-      console.log(`is Favourited #${twoot.isfavourite}`)
-    },
-    addNewTwoot(newTwootContent){
-      this.user.twoots.unshift({
-        id:this.user.twoots.length+1,
-        content: newTwootContent
-      });
-    }
-  },
-  mounted() {
-    this.followUser();
   }
 }
 </script>

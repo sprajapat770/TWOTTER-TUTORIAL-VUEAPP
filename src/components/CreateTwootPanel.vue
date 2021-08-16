@@ -77,7 +77,7 @@ export default {
         font-weight: bold;
       }
     }
-    &.--exceeded {
+    & .--exceeded {
       color: red;
       border-color: red;
       .create-twoot-panel__submit {
