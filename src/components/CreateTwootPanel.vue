@@ -1,5 +1,5 @@
 <template>
-  <form class="create-twoot-panel" @submit.prevent="createNewTwoot" :class="{'--excedded':newTwootCharacterCount > 180}">
+  <form class="create-twoot-panel" @submit.prevent="createNewTwoot" :class="{'--exceeded':newTwootCharacterCount > 180}">
     <label for="newTwoot" ><strong>New Twoot</strong> ({{newTwootCharacterCount}}/180)</label>
     <textarea name="newTwoot" id="newTwoot" cols="4" v-model="state.newTwootContent"></textarea>
     <div class="create-twoot-panel__submit">
@@ -14,7 +14,7 @@
         </option>
       </select>
     </div>
-    <button>
+    <button :disabled="newTwootCharacterCount > 180">
       Twoot!
     </button>
     </div>
@@ -77,7 +77,7 @@ export default {
         font-weight: bold;
       }
     }
-    & .--exceeded {
+    &.--exceeded {
       color: red;
       border-color: red;
       .create-twoot-panel__submit {
