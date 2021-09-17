@@ -58,6 +58,9 @@ export default {
   .twoot-item__user{
     font-weight: bold;
   }
+  .twoot-item__content {
+     word-wrap: anywhere;
+  }
 }
 
 
